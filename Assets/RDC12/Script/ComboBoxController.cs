@@ -7,7 +7,10 @@ public class ComboBoxController : MonoBehaviour {
 
     public bool showMenu;
     public Text btnComboBox;
-    private string seleccion;
+    public string seleccion;
+
+
+
     // Use this for initialization
 
     public void ButtonShowMenu() {
@@ -19,12 +22,19 @@ public class ComboBoxController : MonoBehaviour {
         Debug.Log("Set showMenu:" + showMenu);
     }
 
+
+
     private void SetComboBoxText(string s){
-        //btnComboBox.GetComponent<TextMesh>().text = s;
+        btnComboBox.text = s;
         showMenu = false;
     }
     public void LaTirana() {
         seleccion = "La Tirana";
+        SetComboBoxText(seleccion);
+    }
+    public void LaCueca()
+    {
+        seleccion = "La Cueca";
         SetComboBoxText(seleccion);
     }
     public void ElCuranto()

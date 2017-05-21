@@ -17,15 +17,17 @@ namespace RDC
         public float restoreMovementSpeed = 0.4f;
         public bool allowMultipleDrags = false;
         public GameObject[] objectiveList;
-        public P8Controller pController;
+
+        private void Start()
+        {
+            objectiveList = GameObject.FindGameObjectsWithTag("contenedor");
+        }
 
         // al comenzar el drag setea la posicion inicial del objeto, la cual es en donde fue agarrado
         public void OnBeginDrag(PointerEventData eventData)
         {
-            Debug.Log("OnBeginDrag");
             if (bDragEnabled)
             {
-                Debug.Log("OnBeginDrag: drag enabled");
                 deltaMouseAndTransform = Input.mousePosition - transform.position;
                 startPosition = transform.position;
 
@@ -35,20 +37,16 @@ namespace RDC
 
         public void OnDrag(PointerEventData eventData)
         {
-            Debug.Log("OnDrag");
             if (bDragEnabled)
             {
-                Debug.Log("OnDrag: drag enabled");
                 transform.position = Input.mousePosition - deltaMouseAndTransform;
             }
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            Debug.Log("OnEndDrag");
             if (bDragEnabled)
             {
-                Debug.Log("OnEndDrag: drag enabled");
 
                 GameObject objectiveTargetted = null;
 
@@ -58,54 +56,42 @@ namespace RDC
                 {
                     if (UIUtility.Singleton.Contains(objectiveList[i].transform, UIUtility.Singleton.GetCorrectedMousePosition()))
                     {
-                        Debug.Log("OnEndDrag: utility");
                         
                         objectiveTargetted = objectiveList[i];
-
-                        //PaintObject(objectiveTargetted);
-                        
-
                         break;
                     }
                 }
 
                 if (objectiveTargetted != null)
                 {
-                    Debug.Log("OnEndDrag: has target");
-
                     this.transform.position = objectiveTargetted.transform.position;
+                    //Contenedor donde se pone la imagen.
+                    ContenedorMarcador tmp_cont = objectiveTargetted.GetComponent<ContenedorMarcador>();
+                    ChangeImage(tmp_cont);
+
                     OnDragEndCallback(gameObject, objectiveTargetted);
 
                     if (allowMultipleDrags)
                     {
-                        Debug.Log("OnEndDrag: has target: multipleDrag");
 
                         bDragEnabled = true;
                     }
                 }
                 else
                 {
-                    Debug.Log("OnEndDrag: restore position");
                     RestorePosition();
                 }
             }
         }
 
-        //private void PaintObject(GameObject obj)
-        //{
-        //    Image[] objetoPintable = obj.GetComponent<ColorContainer>().GetImagenPintable();
-        //    Color color = GetComponent<ItemColor>().GetColor();
-
-        //    for (int i = 0; i < objetoPintable.Length; i++) {
-        //        objetoPintable[i].color = color;
-        //    }
-
-        //    pController.CheckGameState();
-        //}
+        private void ChangeImage(ContenedorMarcador cm) {
+            // es el componente del actual objeto dragado
+            MarcadorImagen tmp_imagen = GetComponent<MarcadorImagen>();
+            cm.SwitchMarcador(tmp_imagen);
+        }
 
         protected void RestorePosition()
         {
-            Debug.Log("RestorePosition");
 
             Animations.UIAnimation.Singleton.StartAnimation(
                 new Animations.UIAnimation.LinearMovement(
@@ -123,20 +109,16 @@ namespace RDC
 
         public virtual void OnDragEndCallback(GameObject target, GameObject objectiveTargetted)
         {
-            Debug.Log("OnEndDragCallback");
 
         }
 
         public virtual void OnBeginDrag()
         {
-            Debug.Log("Virtual OnBegin Drag");
 
         }
 
         protected void SetStartPosition(Vector3 newStartPosition)
         {
-            Debug.Log("SetStartPosition");
-
             startPosition = newStartPosition;
         }
     }
